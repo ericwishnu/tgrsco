@@ -1,7 +1,8 @@
 @extends('layouts.app')
 
 @section('title', $product['name'] ?? 'Product Details')
-@section('meta_description', 'View product details at TGRS.CO')
+@section('meta_description', \Illuminate\Support\Str::limit(strip_tags($product['description'] ?? 'Buy this product from trusted China suppliers via TGRS.CO.'), 155))
+@section('meta_image', $product['image'] ?? asset('favicon.svg'))
 
 @section('content')
 

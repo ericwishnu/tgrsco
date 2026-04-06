@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('title', 'Categories')
-@section('meta_description', 'Browse all product categories')
+@section('meta_description', 'Browse all TGRS.CO product categories sourced from trusted China suppliers.')
 
 @section('content')
 <section class="bg-white py-12">

@@ -14,3 +14,5 @@ Route::get('/categories/{slug}', [CatalogController::class, 'showCategory']);
 Route::post('/currency/{code}', [CatalogController::class, 'setCurrency'])->name('currency.set');
 
 Route::get('/about', [CatalogController::class, 'about']);
+
+Route::get('/sitemap.xml', [CatalogController::class, 'sitemap'])->name('sitemap');

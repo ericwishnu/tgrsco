@@ -2,11 +2,33 @@
 <html lang="en">
 
 <head>
+    @php
+        $seoTitle = trim($__env->yieldContent('title', 'Shop')) . ' | TGRS.CO';
+        $seoDescription = trim($__env->yieldContent('meta_description', 'Shop trusted products sourced from China with TGRS.CO, including catalog orders and Jastip requests.'));
+        $seoUrl = trim($__env->yieldContent('canonical_url', url()->current()));
+        $seoImage = trim($__env->yieldContent('meta_image', asset('favicon.svg')));
+        $seoRobots = trim($__env->yieldContent('meta_robots', 'index,follow'));
+    @endphp
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>@yield('title', 'NORDICS') | TGRS.CO</title>
-    <meta name="description" content="@yield('meta_description', 'Nordic Shop – Minimal Nordic Design')">
+    <title>{{ $seoTitle }}</title>
+    <meta name="description" content="{{ $seoDescription }}">
+    <meta name="robots" content="{{ $seoRobots }}">
+    <link rel="canonical" href="{{ $seoUrl }}">
+
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="TGRS.CO">
+    <meta property="og:title" content="{{ $seoTitle }}">
+    <meta property="og:description" content="{{ $seoDescription }}">
+    <meta property="og:url" content="{{ $seoUrl }}">
+    <meta property="og:image" content="{{ $seoImage }}">
+
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="{{ $seoTitle }}">
+    <meta name="twitter:description" content="{{ $seoDescription }}">
+    <meta name="twitter:image" content="{{ $seoImage }}">
+
     <link rel="icon" type="image/svg+xml" href="{{ asset('favicon.svg') }}">
     <link rel="shortcut icon" href="{{ asset('favicon.svg') }}">
 
