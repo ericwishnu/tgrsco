@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('title', $categoryName)
-@section('meta_description', 'Browse ' . $categoryName . ' products')
+@section('meta_description', 'Browse ' . $categoryName . ' products sourced from trusted China suppliers via TGRS.CO.')
 
 @section('content')
 <section class="bg-white py-10 border-b border-gray-200">

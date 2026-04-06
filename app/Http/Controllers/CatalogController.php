@@ -338,6 +338,28 @@ class CatalogController extends Controller
         ]);
     }
 
+    public function sitemap()
+    {
+        $products = Product::query()
+            ->where('is_active', true)
+            ->select(['id', 'updated_at'])
+            ->latest('updated_at')
+            ->get();
+
+        $categories = Category::query()
+            ->where('is_active', true)
+            ->select(['slug', 'updated_at'])
+            ->orderBy('name')
+            ->get();
+
+        return response()
+            ->view('sitemap', [
+                'products' => $products,
+                'categories' => $categories,
+            ])
+            ->header('Content-Type', 'application/xml');
+    }
+
     private function resolveImageUrl(?string $path, bool $withFallback = true): ?string
     {
         if (! $path) {

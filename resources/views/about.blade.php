@@ -1,7 +1,8 @@
 @extends('layouts.app')
 
 @section('title', 'About')
-@section('meta_description', 'Learn about TGRS.CO – our story, values, and the people behind the brand')
+@section('meta_description', 'Learn how TGRS.CO helps you source products from China through a curated catalog and reliable Jastip service.')
+@section('meta_image', $settings['hero_image'] ?? asset('favicon.svg'))
 
 @section('content')
 

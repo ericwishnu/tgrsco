@@ -1,7 +1,8 @@
 @extends('layouts.app')
 
 @section('title', 'Shop')
-@section('meta_description', 'Browse our Nordic minimalist store')
+@section('meta_description', 'Shop trusted products sourced from China. Browse our catalog or request custom items with our Jastip service.')
+@section('meta_image', $banners[0]['image'] ?? asset('favicon.svg'))
 
 @section('content')
 
