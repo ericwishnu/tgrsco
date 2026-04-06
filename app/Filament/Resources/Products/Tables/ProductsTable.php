@@ -34,6 +34,10 @@ class ProductsTable
                     ->sortable(),
                 TextColumn::make('sku')
                     ->searchable(),
+                TextColumn::make('views_count')
+                    ->label('Views')
+                    ->numeric()
+                    ->sortable(),
                 ToggleColumn::make('is_active')
                     ->label('Active')
                     ->sortable(),

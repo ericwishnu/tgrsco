@@ -41,6 +41,7 @@ class CatalogController extends Controller
                 'id' => $product->id,
                 'slug' => $product->slug,
                 'name' => $product->name,
+                'views_count' => $product->views_count,
                 'price' => $this->pricingService->formatMinor(
                     $this->pricingService->resolveDisplayPriceMinor($product, $currency),
                     $currency,
@@ -80,6 +81,9 @@ class CatalogController extends Controller
             ->where('is_active', true)
             ->where('slug', $slug)
             ->firstOrFail();
+
+        $product->increment('views_count');
+        $product->refresh();
 
         $activeVariants = $product->variants
             ->where('is_active', true)
@@ -186,6 +190,7 @@ class CatalogController extends Controller
                 'id' => $related->id,
                 'slug' => $related->slug,
                 'name' => $related->name,
+                'views_count' => $related->views_count,
                 'image' => $this->resolveImageUrl($related->featured_image_url),
                 'price' => $this->pricingService->formatMinor(
                     $this->pricingService->resolveDisplayPriceMinor($related, $currency),
@@ -201,6 +206,7 @@ class CatalogController extends Controller
                 'name' => $product->name,
                 'slug' => $product->slug,
                 'sku' => $initialVariantSku ?? $product->sku,
+                'views_count' => $product->views_count,
                 'price' => $initialPrice,
                 'image' => $initialImage,
                 'category' => $product->category?->slug,
@@ -265,6 +271,7 @@ class CatalogController extends Controller
                 'id' => $product->id,
                 'slug' => $product->slug,
                 'name' => $product->name,
+                'views_count' => $product->views_count,
                 'price' => $this->pricingService->formatMinor(
                     $this->pricingService->resolveDisplayPriceMinor($product, $currency),
                     $currency,

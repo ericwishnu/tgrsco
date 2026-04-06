@@ -8,6 +8,8 @@
         $seoUrl = trim($__env->yieldContent('canonical_url', url()->current()));
         $seoImage = trim($__env->yieldContent('meta_image', asset('favicon.svg')));
         $seoRobots = trim($__env->yieldContent('meta_robots', 'index,follow'));
+        $gaId = \App\Models\SiteSetting::get('google_analytics_id', '');
+        $gscMeta = \App\Models\SiteSetting::get('google_search_console', '');
     @endphp
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -87,6 +89,21 @@
             color: #000;
         }
     </style>
+
+    @if($gscMeta)
+    <meta name="google-site-verification" content="{{ $gscMeta }}">
+    @endif
+
+    @if($gaId)
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id={{ $gaId }}"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', '{{ $gaId }}');
+    </script>
+    @endif
 
     @stack('styles')
 </head>

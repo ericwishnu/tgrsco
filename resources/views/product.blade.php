@@ -120,6 +120,7 @@
                     {{-- Meta --}}
                     <hr class="border-gray-200 mb-4">
                     <p class="text-sm text-gray-500">SKU: <span id="product-sku" class="text-gray-700">{{ $product['sku'] ?? 'N/A' }}</span></p>
+                    <p class="text-sm text-gray-500 mt-1">Views: <span class="text-gray-700">{{ number_format($product['views_count'] ?? 0) }}</span></p>
                     <p class="text-sm text-gray-500 mt-1">Category: <a href="{{ url('/categories/' . ($product['category'] ?? 'home-living')) }}" class="text-gray-700 hover:underline">{{ $categoryName ?? 'Home & Living' }}</a></p>
                 </div>
             </div>
@@ -170,6 +171,7 @@
                             <img class="hover:grow hover:shadow-lg w-full" src="{{ $item['image'] }}" alt="{{ $item['name'] }}">
                             <div class="pt-3">
                                 <p class="text-gray-700">{{ $item['name'] }}</p>
+                                <p class="text-xs text-gray-500 mt-1">{{ number_format($item['views_count'] ?? 0) }} views</p>
                             </div>
                             <p class="pt-1 text-gray-900">{{ $item['price'] }}</p>
                         </a>

@@ -40,6 +40,7 @@
                         <img class="hover:grow hover:shadow-lg w-full" src="{{ $product['image'] }}" alt="{{ $product['name'] }}">
                         <div class="pt-3">
                             <p class="text-gray-800">{{ $product['name'] }}</p>
+                            <p class="text-xs text-gray-500 mt-1">{{ number_format($product['views_count'] ?? 0) }} views</p>
                         </div>
                         <p class="pt-1 text-gray-900">{{ $product['price'] }}</p>
                     </a>

@@ -15,6 +15,7 @@ class Product extends Model
         'name',
         'slug',
         'sku',
+        'views_count',
         'description',
         'details',
         'shipping_information',
@@ -24,6 +25,7 @@ class Product extends Model
 
     protected $casts = [
         'is_active' => 'boolean',
+        'views_count' => 'integer',
     ];
 
     protected static function booted(): void
