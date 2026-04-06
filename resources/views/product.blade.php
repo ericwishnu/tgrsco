@@ -49,7 +49,7 @@
                 <div class="w-full md:w-1/2 px-4">
                     <h1 class="text-2xl font-bold text-gray-800 mb-2">{{ $product['name'] ?? 'Stripy Zig Zag Jigsaw Pillow' }}</h1>
 
-                    <p id="product-price" class="text-xl text-gray-800 mb-4">{{ $product['price'] ?? '£29.99' }}</p>
+                    <p id="product-price" class="text-xl text-gray-800 mb-4 {{ ($product['has_price'] ?? false) ? '' : 'hidden' }}">{{ ($product['has_price'] ?? false) ? ($product['price'] ?? '') : '' }}</p>
 
                     <p class="text-gray-600 mb-6 leading-relaxed">
                         {{ $product['description'] ?: 'No description available yet.' }}
@@ -173,7 +173,9 @@
                                 <p class="text-gray-700">{{ $item['name'] }}</p>
                                 <p class="text-xs text-gray-500 mt-1">{{ number_format($item['views_count'] ?? 0) }} views</p>
                             </div>
-                            <p class="pt-1 text-gray-900">{{ $item['price'] }}</p>
+                            @if($item['has_price'] ?? false)
+                                <p class="pt-1 text-gray-900">{{ $item['price'] }}</p>
+                            @endif
                         </a>
                     </div>
                 @empty
@@ -268,6 +270,8 @@
     }
 
     function refreshVariantUI() {
+        const priceEl = document.getElementById('product-price');
+
         document.querySelectorAll('.variant-option-btn').forEach((btn) => {
             const attr = btn.dataset.attribute;
             const value = btn.dataset.value;
@@ -293,8 +297,14 @@
 
         if (!selectedVariant) return;
 
-        if (selectedVariant.price) {
-            document.getElementById('product-price').textContent = selectedVariant.price;
+        if (priceEl) {
+            if (selectedVariant.has_price && selectedVariant.price) {
+                priceEl.textContent = selectedVariant.price;
+                priceEl.classList.remove('hidden');
+            } else {
+                priceEl.textContent = '';
+                priceEl.classList.add('hidden');
+            }
         }
 
         if (selectedVariant.image) {
@@ -309,7 +319,7 @@
 
     function orderOnWhatsApp() {
         const name  = document.querySelector('h1').textContent.trim();
-        const price = document.getElementById('product-price').textContent.trim();
+        const price = document.getElementById('product-price')?.textContent?.trim() || '';
         const qty   = document.getElementById('qty').value || 1;
 
         const colorLabel = selectedVariant?.option_labels?.color || '-';
@@ -320,7 +330,7 @@
             `Hi! I'd like to place an order:\n\n` +
             `🛍 *${name}*\n` +
             `🔖 SKU: ${sku}\n` +
-            `💰 Price: ${price}\n` +
+            (price ? `💰 Price: ${price}\n` : '') +
             `🎨 Colour: ${colorLabel}\n` +
             `📐 Size: ${sizeLabel}\n` +
             `🔢 Quantity: ${qty}\n\n` +

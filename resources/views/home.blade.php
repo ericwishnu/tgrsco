@@ -124,7 +124,9 @@
                                 {{ $categories[$product['category']] ?? 'General' }}</p>
                             <p class="text-xs text-gray-500 mt-1">{{ number_format($product['views_count'] ?? 0) }} views</p>
                         </div>
-                        <p class="pt-1 text-gray-900">{{ $product['price'] }}</p>
+                        @if($product['has_price'] ?? false)
+                            <p class="pt-1 text-gray-900">{{ $product['price'] }}</p>
+                        @endif
                     </a>
                 </div>
             @endforeach

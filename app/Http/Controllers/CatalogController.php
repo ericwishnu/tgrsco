@@ -37,18 +37,20 @@ class CatalogController extends Controller
             ->where('is_active', true)
             ->latest()
             ->get()
-            ->map(fn (Product $product) => [
-                'id' => $product->id,
-                'slug' => $product->slug,
-                'name' => $product->name,
-                'views_count' => $product->views_count,
-                'price' => $this->pricingService->formatMinor(
-                    $this->pricingService->resolveDisplayPriceMinor($product, $currency),
-                    $currency,
-                ),
-                'image' => $this->resolveImageUrl($product->featured_image_url),
-                'category' => $product->category?->slug ?? 'uncategorized',
-            ])
+            ->map(function (Product $product) use ($currency) {
+                $displayPriceMinor = $this->pricingService->resolveDisplayPriceMinor($product, $currency);
+
+                return [
+                    'id' => $product->id,
+                    'slug' => $product->slug,
+                    'name' => $product->name,
+                    'views_count' => $product->views_count,
+                    'has_price' => $displayPriceMinor > 0,
+                    'price' => $this->pricingService->formatMinor($displayPriceMinor, $currency),
+                    'image' => $this->resolveImageUrl($product->featured_image_url),
+                    'category' => $product->category?->slug ?? 'uncategorized',
+                ];
+            })
             ->toArray();
 
         $banners = Banner::active()
@@ -93,6 +95,7 @@ class CatalogController extends Controller
             $optionValues = [];
             $optionLabels = [];
             $optionMeta = [];
+            $variantPriceMinor = $this->pricingService->resolveVariantPriceMinor($variant, $currency);
 
             foreach ($variant->attributeValues as $attributeValue) {
                 if (! $attributeValue->attribute) {
@@ -112,10 +115,9 @@ class CatalogController extends Controller
                 'name' => $variant->name,
                 'sku' => $variant->sku,
                 'image' => $this->resolveImageUrl($variant->featured_image_url),
-                'price' => $this->pricingService->formatMinor(
-                    $this->pricingService->resolveVariantPriceMinor($variant, $currency),
-                    $currency,
-                ),
+                'price_minor' => $variantPriceMinor,
+                'has_price' => $variantPriceMinor > 0,
+                'price' => $this->pricingService->formatMinor($variantPriceMinor, $currency),
                 'option_values' => $optionValues,
                 'option_labels' => $optionLabels,
                 'option_meta' => $optionMeta,
@@ -154,15 +156,14 @@ class CatalogController extends Controller
 
         $initialVariant = $variantOptions[0] ?? null;
 
-        $initialVariantPrice = data_get($initialVariant, 'price');
+        $initialVariantPriceMinor = data_get($initialVariant, 'price_minor');
         $initialVariantImage = data_get($initialVariant, 'image');
         $initialVariantSku = data_get($initialVariant, 'sku');
 
-        $initialPrice = $initialVariantPrice
-            ?? $this->pricingService->formatMinor(
-                $this->pricingService->resolvePriceMinor($product, $currency),
-                $currency,
-            );
+        $initialPriceMinor = $initialVariantPriceMinor
+            ?? $this->pricingService->resolvePriceMinor($product, $currency);
+
+        $initialPrice = $this->pricingService->formatMinor($initialPriceMinor, $currency);
 
         $initialImage = $initialVariantImage ?: $this->resolveImageUrl($product->featured_image_url);
 
@@ -186,17 +187,19 @@ class CatalogController extends Controller
             ->latest()
             ->take(4)
             ->get()
-            ->map(fn (Product $related) => [
-                'id' => $related->id,
-                'slug' => $related->slug,
-                'name' => $related->name,
-                'views_count' => $related->views_count,
-                'image' => $this->resolveImageUrl($related->featured_image_url),
-                'price' => $this->pricingService->formatMinor(
-                    $this->pricingService->resolveDisplayPriceMinor($related, $currency),
-                    $currency,
-                ),
-            ])
+            ->map(function (Product $related) use ($currency) {
+                $displayPriceMinor = $this->pricingService->resolveDisplayPriceMinor($related, $currency);
+
+                return [
+                    'id' => $related->id,
+                    'slug' => $related->slug,
+                    'name' => $related->name,
+                    'views_count' => $related->views_count,
+                    'image' => $this->resolveImageUrl($related->featured_image_url),
+                    'has_price' => $displayPriceMinor > 0,
+                    'price' => $this->pricingService->formatMinor($displayPriceMinor, $currency),
+                ];
+            })
             ->toArray();
 
         return view('product', [
@@ -207,6 +210,7 @@ class CatalogController extends Controller
                 'slug' => $product->slug,
                 'sku' => $initialVariantSku ?? $product->sku,
                 'views_count' => $product->views_count,
+                'has_price' => $initialPriceMinor > 0,
                 'price' => $initialPrice,
                 'image' => $initialImage,
                 'category' => $product->category?->slug,
@@ -267,17 +271,19 @@ class CatalogController extends Controller
             ->where('is_active', true)
             ->latest()
             ->get()
-            ->map(fn (Product $product) => [
-                'id' => $product->id,
-                'slug' => $product->slug,
-                'name' => $product->name,
-                'views_count' => $product->views_count,
-                'price' => $this->pricingService->formatMinor(
-                    $this->pricingService->resolveDisplayPriceMinor($product, $currency),
-                    $currency,
-                ),
-                'image' => $this->resolveImageUrl($product->featured_image_url),
-            ])
+            ->map(function (Product $product) use ($currency) {
+                $displayPriceMinor = $this->pricingService->resolveDisplayPriceMinor($product, $currency);
+
+                return [
+                    'id' => $product->id,
+                    'slug' => $product->slug,
+                    'name' => $product->name,
+                    'views_count' => $product->views_count,
+                    'has_price' => $displayPriceMinor > 0,
+                    'price' => $this->pricingService->formatMinor($displayPriceMinor, $currency),
+                    'image' => $this->resolveImageUrl($product->featured_image_url),
+                ];
+            })
             ->toArray();
 
         $categories = Category::query()
