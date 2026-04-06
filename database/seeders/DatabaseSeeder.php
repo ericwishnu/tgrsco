@@ -25,6 +25,7 @@ class DatabaseSeeder extends Seeder
 
         $this->call([
             CurrencySeeder::class,
+            ExchangeRateSeeder::class,
             CatalogSeeder::class,
         ]);
     }

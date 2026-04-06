@@ -29,43 +29,39 @@ class PricingService
 
     public function resolvePriceMinor(Product $product, Currency $currency): int
     {
+        // 1. Direct price in the requested currency
         $directPrice = $product->prices->firstWhere('currency_id', $currency->id);
 
         if ($directPrice) {
             return (int) $directPrice->amount_minor;
         }
 
-        $defaultCurrency = Currency::where('is_default', true)->first();
+        // 2. Convert from any stored price that has an exchange rate to the target currency
+        foreach ($product->prices as $storedPrice) {
+            $rate = ExchangeRate::where('base_currency_id', $storedPrice->currency_id)
+                ->where('quote_currency_id', $currency->id)
+                ->latest('fetched_at')
+                ->first();
 
-        if (! $defaultCurrency) {
-            return 0;
+            if (! $rate) {
+                continue;
+            }
+
+            $baseCurrency = Currency::find($storedPrice->currency_id);
+
+            if (! $baseCurrency) {
+                continue;
+            }
+
+            return $this->convertMinorAmount(
+                (int) $storedPrice->amount_minor,
+                $baseCurrency,
+                $currency,
+                (float) $rate->rate,
+            );
         }
 
-        $basePrice = $product->prices->firstWhere('currency_id', $defaultCurrency->id);
-
-        if (! $basePrice) {
-            return 0;
-        }
-
-        if ($defaultCurrency->id === $currency->id) {
-            return (int) $basePrice->amount_minor;
-        }
-
-        $rate = ExchangeRate::where('base_currency_id', $defaultCurrency->id)
-            ->where('quote_currency_id', $currency->id)
-            ->latest('fetched_at')
-            ->first();
-
-        if (! $rate) {
-            return 0;
-        }
-
-        return $this->convertMinorAmount(
-            (int) $basePrice->amount_minor,
-            $defaultCurrency,
-            $currency,
-            (float) $rate->rate,
-        );
+        return 0;
     }
 
     public function formatMinor(int $amountMinor, Currency $currency): string
@@ -78,43 +74,39 @@ class PricingService
 
     public function resolveVariantPriceMinor(ProductVariant $variant, Currency $currency): int
     {
+        // 1. Direct price in the requested currency
         $directPrice = $variant->prices->firstWhere('currency_id', $currency->id);
 
         if ($directPrice) {
             return (int) $directPrice->amount_minor;
         }
 
-        $defaultCurrency = Currency::where('is_default', true)->first();
+        // 2. Convert from any stored price that has an exchange rate to the target currency
+        foreach ($variant->prices as $storedPrice) {
+            $rate = ExchangeRate::where('base_currency_id', $storedPrice->currency_id)
+                ->where('quote_currency_id', $currency->id)
+                ->latest('fetched_at')
+                ->first();
 
-        if (! $defaultCurrency) {
-            return 0;
+            if (! $rate) {
+                continue;
+            }
+
+            $baseCurrency = Currency::find($storedPrice->currency_id);
+
+            if (! $baseCurrency) {
+                continue;
+            }
+
+            return $this->convertMinorAmount(
+                (int) $storedPrice->amount_minor,
+                $baseCurrency,
+                $currency,
+                (float) $rate->rate,
+            );
         }
 
-        $basePrice = $variant->prices->firstWhere('currency_id', $defaultCurrency->id);
-
-        if (! $basePrice) {
-            return 0;
-        }
-
-        if ($defaultCurrency->id === $currency->id) {
-            return (int) $basePrice->amount_minor;
-        }
-
-        $rate = ExchangeRate::where('base_currency_id', $defaultCurrency->id)
-            ->where('quote_currency_id', $currency->id)
-            ->latest('fetched_at')
-            ->first();
-
-        if (! $rate) {
-            return 0;
-        }
-
-        return $this->convertMinorAmount(
-            (int) $basePrice->amount_minor,
-            $defaultCurrency,
-            $currency,
-            (float) $rate->rate,
-        );
+        return 0;
     }
 
     private function convertMinorAmount(

@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\ProductPrices\Schemas;
 
+use App\Models\Currency;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Schema;
@@ -25,10 +26,35 @@ class ProductPriceForm
                 TextInput::make('amount_minor')
                     ->required()
                     ->numeric()
-                    ->label('Amount (minor units)'),
+                    ->label('Amount')
+                    ->afterStateHydrated(function (TextInput $component, $state, $record): void {
+                        if ($state !== null && $record?->currency) {
+                            $decimals = max(0, (int) $record->currency->decimal_places);
+                            $component->state($state / (10 ** $decimals));
+                        }
+                    })
+                    ->dehydrateStateUsing(function ($state, $get): int {
+                        $currency = Currency::find($get('currency_id'));
+                        $decimals = $currency ? max(0, (int) $currency->decimal_places) : 0;
+                        return (int) round((float) $state * (10 ** $decimals));
+                    }),
                 TextInput::make('compare_at_minor')
                     ->numeric()
-                    ->label('Compare At (minor units)'),
+                    ->label('Compare At')
+                    ->afterStateHydrated(function (TextInput $component, $state, $record): void {
+                        if ($state !== null && $record?->currency) {
+                            $decimals = max(0, (int) $record->currency->decimal_places);
+                            $component->state($state / (10 ** $decimals));
+                        }
+                    })
+                    ->dehydrateStateUsing(function ($state, $get): ?int {
+                        if ($state === null || $state === '') {
+                            return null;
+                        }
+                        $currency = Currency::find($get('currency_id'));
+                        $decimals = $currency ? max(0, (int) $currency->decimal_places) : 0;
+                        return (int) round((float) $state * (10 ** $decimals));
+                    }),
             ]);
     }
 }
