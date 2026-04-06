@@ -115,7 +115,7 @@
             @foreach ($products as $product)
                 <div class="w-full md:w-1/3 xl:w-1/4 p-6 flex flex-col product-card"
                     data-category="{{ $product['category'] }}">
-                    <a href="{{ url('/product/' . $product['id']) }}">
+                    <a href="{{ url('/product/' . $product['slug']) }}">
                         <img class="w-full h-72 object-cover hover:grow hover:shadow-lg" src="{{ $product['image'] }}"
                             alt="{{ $product['name'] }}">
                         <div class="pt-3">

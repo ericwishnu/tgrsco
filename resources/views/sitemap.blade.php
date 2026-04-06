@@ -29,7 +29,7 @@
 
     @foreach($products as $product)
         <url>
-            <loc>{{ url('/product/' . $product->id) }}</loc>
+            <loc>{{ url('/product/' . ($product->slug ?: $product->id)) }}</loc>
             @if($product->updated_at)
                 <lastmod>{{ $product->updated_at->toAtomString() }}</lastmod>
             @endif

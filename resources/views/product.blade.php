@@ -166,7 +166,7 @@
             <div class="flex flex-wrap -mx-3">
                 @forelse(($relatedProducts ?? []) as $item)
                     <div class="w-full md:w-1/2 xl:w-1/4 px-3 mb-6">
-                        <a href="{{ url('/product/' . $item['id']) }}">
+                        <a href="{{ url('/product/' . $item['slug']) }}">
                             <img class="hover:grow hover:shadow-lg w-full" src="{{ $item['image'] }}" alt="{{ $item['name'] }}">
                             <div class="pt-3">
                                 <p class="text-gray-700">{{ $item['name'] }}</p>

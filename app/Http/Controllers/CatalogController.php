@@ -39,6 +39,7 @@ class CatalogController extends Controller
             ->get()
             ->map(fn (Product $product) => [
                 'id' => $product->id,
+                'slug' => $product->slug,
                 'name' => $product->name,
                 'price' => $this->pricingService->formatMinor(
                     $this->pricingService->resolveDisplayPriceMinor($product, $currency),
@@ -70,14 +71,15 @@ class CatalogController extends Controller
         ]);
     }
 
-    public function showProduct(Request $request, int $id): View
+    public function showProduct(Request $request, string $slug): View
     {
         $currency = $this->currencyService->getCurrentCurrency($request);
 
         $product = Product::query()
             ->with(['category', 'images', 'prices', 'variants.attributeValues.attribute', 'variants.prices'])
             ->where('is_active', true)
-            ->findOrFail($id);
+            ->where('slug', $slug)
+            ->firstOrFail();
 
         $activeVariants = $product->variants
             ->where('is_active', true)
@@ -182,6 +184,7 @@ class CatalogController extends Controller
             ->get()
             ->map(fn (Product $related) => [
                 'id' => $related->id,
+                'slug' => $related->slug,
                 'name' => $related->name,
                 'image' => $this->resolveImageUrl($related->featured_image_url),
                 'price' => $this->pricingService->formatMinor(
@@ -192,7 +195,7 @@ class CatalogController extends Controller
             ->toArray();
 
         return view('product', [
-            'id' => $id,
+            'id' => $product->id,
             'product' => [
                 'id' => $product->id,
                 'name' => $product->name,
@@ -260,6 +263,7 @@ class CatalogController extends Controller
             ->get()
             ->map(fn (Product $product) => [
                 'id' => $product->id,
+                'slug' => $product->slug,
                 'name' => $product->name,
                 'price' => $this->pricingService->formatMinor(
                     $this->pricingService->resolveDisplayPriceMinor($product, $currency),
@@ -290,6 +294,16 @@ class CatalogController extends Controller
         $this->currencyService->setCurrency($request, $code);
 
         return back();
+    }
+
+    public function showProductById(int $id): RedirectResponse
+    {
+        $product = Product::query()
+            ->where('id', $id)
+            ->where('is_active', true)
+            ->firstOrFail();
+
+        return redirect()->route('product.show', ['slug' => $product->slug], 301);
     }
 
     public function about(Request $request): View
@@ -342,7 +356,7 @@ class CatalogController extends Controller
     {
         $products = Product::query()
             ->where('is_active', true)
-            ->select(['id', 'updated_at'])
+            ->select(['id', 'slug', 'updated_at'])
             ->latest('updated_at')
             ->get();
 

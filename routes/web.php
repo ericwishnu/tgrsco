@@ -5,7 +5,10 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', [CatalogController::class, 'index']);
 
-Route::get('/product/{id}', [CatalogController::class, 'showProduct']);
+Route::get('/product/{id}', [CatalogController::class, 'showProductById'])
+	->whereNumber('id')
+	->name('product.legacy');
+Route::get('/product/{slug}', [CatalogController::class, 'showProduct'])->name('product.show');
 
 Route::get('/categories', [CatalogController::class, 'categories']);
 
